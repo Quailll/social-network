@@ -41,11 +41,40 @@ module.exports = {
       .then((thoughts) => {
       return User.findOneAndUpdate(
         {thought: req.params.thoughtId},
-        {$pull: {thought: req.params.thoughtId}}
+        {$pull: {thought: req.params.thoughtId}},
+        {new: true}
       );
     })
-      res.json(thoughts)
+    .then((user) => {
+      if(!user){
+        return res.status(404).json({message: 'no user'})
+      }
+      res.json({message: 'thought deleted'})
+    })
       .catch((err) => res.status(500).json(err));
   },
-
+  addReaction(req, res){
+    Thought.findOneAndUpdate({_id: req.params.thoughtId}, {$addToSet: {reaction: req.body}}, {new: true})
+      .then((thoughts)=> {
+        if(!thoughts){
+          return res.status(404).json({message: 'no thought'})
+        }
+        res.json(thoughts)
+      })
+      .catch((err)=> res.status(500).json(err))
+  },
+  deleteReaction(req, res) {
+    Thought.findOneAndDelete(
+      { _id: req.params.thoughtId },
+      { $pull: { reaction: { reactionId: req.params.reactionId } } },
+      { new: true }
+    )
+      .then((thoughts) => {
+        if (!thoughts) {
+          return res.status(404).json({ message: "no thought" });
+        }
+        res.json(thought);
+      })
+      .catch((err) => res.status(500).json(err));
+  }
 }
