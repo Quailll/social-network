@@ -7,7 +7,7 @@ const reactionSchema = new Schema(
     username: {type: String, require: true,},
   },
   {
-    toJSON: {virtuals: true}, id: false,
+    toJSON: {getters: true}, id: false,
   }
 );
 
